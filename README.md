@@ -1,54 +1,53 @@
-<div align="center">
-  
-  ![GitHub repo size](https://img.shields.io/github/repo-size/codewithsadee/futras)
-  ![GitHub stars](https://img.shields.io/github/stars/codewithsadee/futras?style=social)
-  ![GitHub forks](https://img.shields.io/github/forks/codewithsadee/futras?style=social)
-[![Twitter Follow](https://img.shields.io/twitter/follow/codewithsadee_?style=social)](https://twitter.com/intent/follow?screen_name=codewithsadee_)
-  [![YouTube Video Views](https://img.shields.io/youtube/views/QrS56MIl-CE?style=social)](https://youtu.be/QrS56MIl-CE)
+# GetFit - Fitness & Nutrition Management System
 
-  <br />
-  <br />
+GetFit is a modern, premium web application designed to help users track their fitness goals, manage workout and diet plans, and monitor their physical progress. It features a sleek dark-themed UI with glassmorphism elements and a comprehensive admin panel for user and content management.
 
-  <h2 align="center">Futras - Fitness Website</h2>
+## 🚀 Key Features
 
-  Futras is a fully responsive fitness website, <br />Responsive for all devices, build using HTML, CSS, and JavaScript.
+### User Features
+- **Personalized Dashboard**: View your current stats, goals, and daily plans at a glance.
+- **Goal Tracking**: Add, edit, and track your fitness milestones.
+- **Progress Logs**: Record weight and body measurements regularly to see your transformation.
+- **Workout & Diet Plans**: Access structured plans to stay on track with your fitness journey.
+- **AI Chatbot**: Get quick answers and assistance through the integrated chatbot.
 
-  <a href="https://codewithsadee.github.io/futras/"><strong>➥ Live Demo</strong></a>
+### Admin Features
+- **User Management**: Monitor registered users and manage accounts.
+- **Platform Analytics**: View statistics on total users, goals set, and progress logs recorded.
+- **Content Management**: Update website content directly from the admin dashboard.
+- **Contact Support**: View and respond to user inquiries submitted via the contact form.
 
-</div>
+## 🛠️ Tech Stack
+- **Frontend**: HTML5, Vanilla CSS (Modern UI/UX), JavaScript
+- **Backend**: PHP (7.4+)
+- **Database**: MySQL (MariaDB)
+- **Icons**: Ionicons
 
-<br />
-
-### Demo Screeshots
-
-![Futras Desktop Demo](./readme-images/desktop.png "Desktop Demo")
+## 📦 Local Setup Instructions
 
 ### Prerequisites
+- [XAMPP](https://www.apachefriends.org/index.html) installed.
+- MySQL and Apache services running.
 
-Before you begin, ensure you have met the following requirements:
+### Installation
+1.  **Clone the Repository**:
+    ```bash
+    git clone https://github.com/RavalHappy021/Getfit.git
+    ```
+2.  **Move to htdocs**: Place the project folder in your `C:\xampp\htdocs\` directory.
+3.  **Database Setup**:
+    - Open **phpMyAdmin** ([http://localhost/phpmyadmin/](http://localhost/phpmyadmin/)).
+    - Create a new database named `getfit_db`.
+    - Import the `setup_database.sql` file provided in the repository.
+4.  **Database Configuration**:
+    - Ensure your database credentials in `admin/db.php` match your local XAMPP setup (default: user `root`, no password).
 
-* [Git](https://git-scm.com/downloads "Download Git") must be installed on your operating system.
+### Accessing the App
+- **User Frontend**: [http://localhost/getfit/index.php](http://localhost/getfit/index.php)
+- **Admin Portal**: [http://localhost/getfit/admin/admin-login.php](http://localhost/getfit/admin/admin-login.php)
 
-### Run Locally
+## 🔒 Security Note
+This project uses `password_hash()` and `password_verify()` for secure user authentication. Database configuration files are excluded from version control via `.gitignore` to protect sensitive information.
 
-To run **Futras** locally, run this command on your git bash:
-
-Linux and macOS:
-
-```bash
-sudo git clone https://github.com/codewithsadee/futras.git
-```
-
-Windows:
-
-```bash
-git clone https://github.com/codewithsadee/futras.git
-```
-
-### Contact
-
-If you want to contact with me you can reach me at [Twitter](https://www.twitter.com/codewithsadee).
-
-### License
-
-This project is **free to use** and does not contains any license.
+---
+*Created by [RavalHappy021](https://github.com/RavalHappy021)*
