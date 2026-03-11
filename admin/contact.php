@@ -454,7 +454,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   <!-- FOOTER -->
   <footer class="footer">
-    <p>&copy; 2025 GetFit &mdash; Made by <a href="#">Happy Raval &amp; Priya Haripara</a></p>
+    <p>&copy; 2025 GetFit &mdash; Made with ❤️ by <a href="#">Happy Raval</a></p>
   </footer>
 
 </body>

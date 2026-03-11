@@ -502,7 +502,7 @@ $loggedIn = isset($_SESSION['username']);
       <div class="container">
         <p class="copyright">
           &copy; 2025 GetFit &mdash; Made with ❤️ by
-          <a href="#" class="copyright-link">Happy Raval &amp; Priya Haripara</a>
+          <a href="#" class="copyright-link">Happy Raval</a>
         </p>
 
         <ul class="footer-bottom-list">
