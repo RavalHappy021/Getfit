@@ -98,7 +98,7 @@ $loggedIn = isset($_SESSION['username']);
     /* ===== STATS SECTION ===== */
     .stats {
       background: var(--bg-2);
-      padding: 60px 0;
+      padding-block: var(--section-padding);
       border-top: 1px solid var(--border-1);
       border-bottom: 1px solid var(--border-1);
     }
