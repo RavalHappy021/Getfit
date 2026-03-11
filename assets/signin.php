@@ -1,39 +1,30 @@
 <?php
 session_start();
+require_once 'signup_db_connect.php';
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $conn = new mysqli("localhost", "root", "", "getfit_db");
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $stmt = $conn->prepare("SELECT username, password FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
+    try {
+        $user = $db->users->findOne(['email' => $email]);
 
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($username, $hashedPassword);
-        $stmt->fetch();
-
-        if (password_verify($password, $hashedPassword)) {
-            $_SESSION['username'] = $username;
-            header("Location: ../user-dashboard.php");
-            exit();
+        if ($user) {
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['username'] = $user['username'];
+                // $_SESSION['role'] = $user['role']; // Optional but good for consistency
+                header("Location: ../user-dashboard.php");
+                exit();
+            } else {
+                $error = "Incorrect password. Please try again.";
+            }
         } else {
-            $error = "Incorrect password. Please try again.";
+            $error = "No account found with this email.";
         }
-    } else {
-        $error = "No account found with this email.";
+    } catch (Exception $e) {
+        $error = "Database error: " . $e->getMessage();
     }
-
-    $stmt->close();
-    $conn->close();
 }
 ?>
 <!DOCTYPE html>
