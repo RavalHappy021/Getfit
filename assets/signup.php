@@ -1,5 +1,5 @@
 <?php
-include 'signup_db_connect.php';
+include __DIR__ . '/signup_db_connect.php';
 
 $errors = "";
 $age = $city = $weight = "";

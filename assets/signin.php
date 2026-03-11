@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'signup_db_connect.php';
+require_once __DIR__ . '/signup_db_connect.php';
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
