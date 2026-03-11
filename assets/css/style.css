@@ -1323,6 +1323,39 @@ body {
 /* ============================================
    CONTACT INFO
    ============================================ */
+/* ============================================
+   ABOUT PAGE SPECIFIC
+   ============================================ */
+.about-hero {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-hero .hero-title {
+  margin-inline: auto;
+  max-width: 800px;
+}
+
+.about .about-content {
+  display: grid;
+  gap: 60px;
+  align-items: center;
+}
+
+@media (min-width: 992px) {
+  .about .about-content {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 .contact-info p {
   color: var(--text-2);
   font-size: var(--fs-base);
