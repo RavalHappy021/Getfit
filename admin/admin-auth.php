@@ -1,6 +1,7 @@
 <?php
+ob_start();
 session_start();
-include('db.php'); // Now includes main config.php
+include __DIR__ . '/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
