@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - Getfit</title>
+  
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <header class="header" data-header>
+    <div class="container">
+      <a href="./index.php" class="logo">GetFit<span class="span">.</span></a>
+      <nav class="navbar" data-navbar>
+        <button class="nav-toggle-btn" aria-label="close menu" data-nav-toggler><ion-icon name="close-outline"></ion-icon></button>
+        <ul class="navbar-list">
+          <li class="navbar-item"><a href="./index.php" class="navbar-link" data-nav-link>Home</a></li>
+          <li class="navbar-item"><a href="about.html" class="navbar-link" data-nav-link>About Us</a></li>
+          <li class="navbar-item"><a href="course.html" class="navbar-link" data-nav-link>Courses</a></li>
+          <li class="navbar-item"><a href="blog.html" class="navbar-link" data-nav-link>Blog</a></li>
+          <li class="navbar-item"><a href="./admin/contact.php" class="navbar-link" data-nav-link>Contact</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <a href="./assets/signin.php" class="btn btn-secondary">Sign In</a>
+        <a href="./assets/signup.php" class="btn btn-primary">Get Started</a>
+      </div>
+      <button class="nav-toggle-btn" aria-label="open menu" data-nav-toggler><ion-icon name="menu-outline"></ion-icon></button>
+      <div class="overlay" data-nav-toggler data-overlay></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section about" aria-label="about">
+      <div class="container">
+        <div class="about-banner img-holder" style="--width: 470; --height: 580;">
+          <img src="./assets/images/about-banner.jpg" width="470" height="580" loading="lazy" alt="about banner" class="img-cover">
+          <a href="#" class="btn btn-secondary">Meet Instructor</a>
+        </div>
+
+        <div class="about-content">
+          
+          <h2 class="h2 section-title">We have expert instructors to help our students.</h2>
+          <p class="section-text">we help users achieve their fitness goals by providing expert guidance, structured workout plans, 
+            and personalized training programs. We offer step-by-step video tutorials, live coaching sessions, 
+            and fitness tips tailored to different skill levels. Additionally, we track user progress, answer queries, 
+            and motivate them through interactive challenges and goal-setting strategies. 
+            By fostering a supportive fitness community, we ensure that every user stays engaged, learns effectively, 
+            and achieves their desired health and wellness results. </p>
+          <h3 class="about-h3">100+ Courses</h3>
+          <p class="section-text">Lorem Ipsum has been the industry's standard dummy text for centuries, providing structure and readability.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-bottom">
+      <div class="container">
+        <p class="copyright">&copy; 2025 GetFit &mdash; Made by <a href="#" class="copyright-link">Happy Raval &amp; Priya Haripara</a></p>
+        <ul class="footer-bottom-list">
+          <li class="footer-bottom-item"><a href="#" class="footer-bottom-link">Terms of Service</a></li>
+          <li class="footer-bottom-item"><a href="#" class="footer-bottom-link">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#top" class="back-top-btn" aria-label="back to top" data-back-top-btn>
+    <ion-icon name="chevron-up" aria-hidden="true"></ion-icon>
+  </a>
+  <script src="./assets/js/script.js" defer></script>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>

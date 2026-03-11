@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Men's Fitness Courses</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f4f7;
+    }
+
+    header {
+      background-color: #d57012;
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(to right, #cb803a, #dfb287);
+       }
+
+    .hero h2 {
+      font-size: 1.8rem;
+      color: #333;
+    }
+
+    .courses {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+
+    .course-card {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .course-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .course-card h3 {
+      margin-top: 0;
+      color: #000000;
+    }
+
+    .course-card p {
+      color: #000000;
+    }
+
+    .enroll-btn {
+      background-color: #cb803a;
+      color: white;
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .enroll-btn:hover {
+      background-color: #d57012;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #c76a12;
+      color: white;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Men's Fitness Courses</h1>
+  </header>
+
+  <section class="hero">
+    <h2>Build Strength and Boost Endurance 💥</h2>
+    <p>Explore our beginner-level training routines crafted for men's fitness goals.</p>
+  </section>
+
+  <section class="courses">
+    <div class="course-card">
+      <h3>Beginner Strength Training</h3>
+      <p>Learn the basics of resistance workouts to build muscle and power.</p>
+      <button class="enroll-btn" onclick="enroll('Beginner Strength Training')">Enroll Now</button>
+    </div>
+    <div class="course-card">
+      <h3>Endurance Builder</h3>
+      <p>Boost stamina with low-impact cardio and full-body circuits.</p>
+      <button class="enroll-btn" onclick="enroll('Endurance Builder')">Enroll Now</button>
+    </div>
+    <div class="course-card">
+      <h3>Core & Stability</h3>
+      <p>Strengthen your abs and lower back with simple core exercises.</p>
+      <button class="enroll-btn" onclick="enroll('Core & Stability')">Enroll Now</button>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 Getfit. All Rights Reserved
+  </footer>
+
+  <script>
+    function enroll(course) {
+      alert("You’ve enrolled in: " + course + "!");
+    }
+  </script>
+
+</body>
+</html>

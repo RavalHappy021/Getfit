@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beginner Workout Routines</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fff5f0;
+    }
+
+    header {
+      background-color: #d57012;
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: #333;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(to right, #cb803a, #dfb287);
+    }
+
+    .hero h2 {
+      font-size: 1.8rem;
+      color: #333;
+    }
+
+    .courses {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+
+    .course-card {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .course-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .course-card h3 {
+      margin-top: 0;
+      color: #000000;
+    }
+
+    .course-card p {
+      color: #000000;
+    }
+
+    .enroll-btn {
+      background-color: #cb803a;
+      color: white;
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .enroll-btn:hover {
+      background-color: #d57012;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #c76a12;
+      color: white;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Beginner Workout Routines</h1>
+  </header>
+
+  <section class="hero">
+    <h2>Start Your Fitness Journey Today 🌟</h2>
+    <p>Simple and effective routines for beginners to get moving and stay healthy.</p>
+  </section>
+
+  <section class="courses">
+    <div class="course-card">
+      <h3>Full Body Stretch</h3>
+      <p>Gentle stretches to wake up your muscles and improve flexibility.</p>
+      <button class="enroll-btn" onclick="enroll('Full Body Stretch')">Start Routine</button>
+    </div>
+    <div class="course-card">
+      <h3>Low Impact Cardio</h3>
+      <p>Easy cardio moves to boost your heart health without strain.</p>
+      <button class="enroll-btn" onclick="enroll('Low Impact Cardio')">Start Routine</button>
+    </div>
+    <div class="course-card">
+      <h3>Core Basics</h3>
+      <p>Beginner core exercises to strengthen your abs and lower back.</p>
+      <button class="enroll-btn" onclick="enroll('Core Basics')">Start Routine</button>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 Getfit. All Rights Reserved
+  </footer>
+
+  <script>
+    function enroll(course) {
+      alert("Great choice! You started: " + course + " routine.");
+    }
+  </script>
+
+</body>
+</html>
