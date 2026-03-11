@@ -14,8 +14,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($user) {
             if (password_verify($password, $user['password'])) {
                 $_SESSION['username'] = $user['username'];
-                // $_SESSION['role'] = $user['role']; // Optional but good for consistency
-                header("Location: ../user-dashboard.php");
+                
+                // Vercel Session Fallback: Set a cookie that lasts for 1 day
+                setcookie('getfit_user', $user['username'], time() + (86400 * 1), "/");
+
+                // Use absolute path for Vercel
+                echo "<script>
+                    window.location.href = '/user-dashboard.php';
+                </script>";
                 exit();
             } else {
                 $error = "Incorrect password. Please try again.";

@@ -4,6 +4,11 @@ require_once __DIR__ . '/config.php';
 
 if (session_status() == PHP_SESSION_NONE) { session_start(); }
 
+// Vercel Session Fallback: If session is lost, try to restore from cookie
+if (!isset($_SESSION['username']) && isset($_COOKIE['getfit_user'])) {
+    $_SESSION['username'] = $_COOKIE['getfit_user'];
+}
+
 if (!isset($_SESSION['username'])) {
     header("Location: assets/signin.php");
     exit();
