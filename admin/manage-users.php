@@ -56,8 +56,9 @@ include('db.php');
       </div>
 
       <?php
-        $result = mysqli_query($conn, "SELECT * FROM users ORDER BY id DESC");
-        $count = mysqli_num_rows($result);
+        $cursor = $db->users->find([], ['sort' => ['_id' => -1]]);
+        $users = iterator_to_array($cursor);
+        $count = count($users);
       ?>
 
       <div style="padding: 0 24px 10px; display:flex; align-items:center; gap:12px;">
@@ -77,21 +78,21 @@ include('db.php');
             </tr>
           </thead>
           <tbody>
-            <?php while ($row = mysqli_fetch_assoc($result)): ?>
+            <?php foreach ($users as $row): ?>
               <tr>
-                <td><?= htmlspecialchars($row['id']) ?></td>
+                <td><?= htmlspecialchars((string)$row['_id']) ?></td>
                 <td><strong style="color:var(--text-1)"><?= htmlspecialchars($row['username']) ?></strong></td>
                 <td><?= htmlspecialchars($row['email']) ?></td>
                 <td><?= htmlspecialchars($row['city'] ?? '—') ?></td>
                 <td><?= htmlspecialchars($row['weight'] ?? '—') ?> kg</td>
                 <td>
-                  <a href="delete-user.php?id=<?= $row['id'] ?>" class="btn btn-danger" id="delete-user-<?= $row['id'] ?>"
+                  <a href="delete-user.php?id=<?= (string)$row['_id'] ?>" class="btn btn-danger" id="delete-user-<?= (string)$row['_id'] ?>"
                      onclick="return confirm('Are you sure you want to delete this user? This cannot be undone.')">
                     🗑️ Delete
                   </a>
                 </td>
               </tr>
-            <?php endwhile; ?>
+            <?php endforeach; ?>
           </tbody>
         </table>
       <?php else: ?>

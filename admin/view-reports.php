@@ -53,9 +53,9 @@ include('db.php');
     <!-- Quick Stats from DB -->
     <div class="stat-cards-row">
       <?php
-        $userCount = mysqli_fetch_row(mysqli_query($conn, "SELECT COUNT(*) FROM users"))[0] ?? 0;
-        $goalCount = mysqli_fetch_row(mysqli_query($conn, "SELECT COUNT(*) FROM goals"))[0] ?? 0;
-        $progressCount = mysqli_fetch_row(mysqli_query($conn, "SELECT COUNT(*) FROM progress"))[0] ?? 0;
+        $userCount = iterator_count($db->users->find());
+        $goalCount = iterator_count($db->goals->find());
+        $progressCount = iterator_count($db->progress->find());
       ?>
       <div class="stat-card">
         <span class="stat-card-icon">👥</span>
@@ -97,9 +97,9 @@ include('db.php');
         <a href="manage-users.php" class="btn btn-secondary-outline" id="view-all-users-btn" style="font-size:1.3rem;">View All →</a>
       </div>
       <?php
-        $recentResult = mysqli_query($conn, "SELECT id, username, email, city FROM users ORDER BY id DESC LIMIT 5");
+        $recentUsers = iterator_to_array($db->users->find([], ['sort' => ['_id' => -1], 'limit' => 5]));
       ?>
-      <?php if ($recentResult && mysqli_num_rows($recentResult) > 0): ?>
+      <?php if (count($recentUsers) > 0): ?>
         <table class="admin-table" style="margin: 0 24px 24px; width: calc(100% - 48px);">
           <thead>
             <tr>
@@ -110,14 +110,14 @@ include('db.php');
             </tr>
           </thead>
           <tbody>
-            <?php while ($row = mysqli_fetch_assoc($recentResult)): ?>
+            <?php foreach ($recentUsers as $row): ?>
               <tr>
-                <td><?= $row['id'] ?></td>
+                <td><?= (string)$row['_id'] ?></td>
                 <td><strong style="color:var(--text-1)"><?= htmlspecialchars($row['username']) ?></strong></td>
                 <td><?= htmlspecialchars($row['email']) ?></td>
                 <td><?= htmlspecialchars($row['city'] ?? '—') ?></td>
               </tr>
-            <?php endwhile; ?>
+            <?php endforeach; ?>
           </tbody>
         </table>
       <?php else: ?>

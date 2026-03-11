@@ -5,25 +5,51 @@ $errors = "";
 $age = $city = $weight = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $email = $_POST['email'];
+    $username = $_POST['username'];
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
-    $age = mysqli_real_escape_string($conn, $_POST['age']);
-    $city = mysqli_real_escape_string($conn, $_POST['city']);
-    $weight = mysqli_real_escape_string($conn, $_POST['weight']);
+    $age = (int)$_POST['age'];
+    $city = $_POST['city'];
+    $weight = (float)$_POST['weight'];
 
     if ($password !== $confirm_password) {
         $errors = "Passwords do not match!";
     } elseif (strlen($password) < 6) {
         $errors = "Password must be at least 6 characters!";
     } else {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO users (email, username, password, age, city, weight) VALUES ('$email', '$username', '$hashed_password', '$age', '$city', '$weight')";
-        if (mysqli_query($conn, $sql)) {
-            echo "<script>alert('Registration Successful! You can now log in.'); window.location.href = 'signin.php';</script>";
-        } else {
-            $errors = "Error: " . mysqli_error($conn);
+        try {
+            // Check if user already exists
+            $existingUser = $db->users->findOne([
+                '$or' => [
+                    ['email' => $email],
+                    ['username' => $username]
+                ]
+            ]);
+
+            if ($existingUser) {
+                $errors = "Email or Username already exists!";
+            } else {
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $result = $db->users->insertOne([
+                    'email' => $email,
+                    'username' => $username,
+                    'password' => $hashed_password,
+                    'age' => $age,
+                    'city' => $city,
+                    'weight' => $weight,
+                    'role' => 'user',
+                    'created_at' => new MongoDB\BSON\UTCDateTime()
+                ]);
+
+                if ($result->getInsertedCount() === 1) {
+                    echo "<script>alert('Registration Successful! You can now log in.'); window.location.href = 'signin.php';</script>";
+                } else {
+                    $errors = "Error: Could not register user.";
+                }
+            }
+        } catch (Exception $e) {
+            $errors = "Error: " . $e->getMessage();
         }
     }
 }

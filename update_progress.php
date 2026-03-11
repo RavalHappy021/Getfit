@@ -1,28 +1,34 @@
 <?php
 session_start();
-include 'db.php'; // adjust as needed to include your DB connection
+require_once 'config.php';
 
-// Assuming user is already logged in and user_id is in session
 $userId = $_SESSION['user_id'] ?? null;
 if (!$userId) {
-    header("Location: update_progress.php"); // Redirect to login if not logged in
+    header("Location: assets/signin.php");
     exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_progress'])) {
     $progress_date = $_POST['progress_date'];
-    $weight = $_POST['weight'];
-    $waist = $_POST['waist'];
-    $chest = $_POST['chest'];
+    $weight = (float)$_POST['weight'];
+    $waist = (float)$_POST['waist'];
+    $chest = (float)$_POST['chest'];
 
-    $conn = new mysqli("localhost", "root", "", "getfit"); // Or use your existing connection file
+    try {
+        $result = $db->progress->insertOne([
+            'user_id' => new MongoDB\BSON\ObjectId($userId),
+            'date' => $progress_date,
+            'weight' => $weight,
+            'waist' => $waist,
+            'chest' => $chest,
+            'created_at' => new MongoDB\BSON\UTCDateTime()
+        ]);
 
-    $insert = $conn->prepare("INSERT INTO progress (user_id, date, weight, waist, chest) VALUES (?, ?, ?, ?, ?)");
-    $insert->bind_param("isdss", $userId, $progress_date, $weight, $waist, $chest);
-    $insert->execute();
-
-    header("Location: dashboard.php"); // Redirect back to dashboard
-    exit;
+        header("Location: user-dashboard.php");
+        exit;
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
+    }
 }
 ?>
 

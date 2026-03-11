@@ -1,3 +1,12 @@
+<?php
+require_once '../config.php';
+
+// Fetch stats
+$totalUsers = iterator_count($db->users->find());
+$totalContent = iterator_count($db->content->find());
+$totalMessages = iterator_count($db->contact_messages->find());
+$totalGoals = iterator_count($db->goals->find());
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,22 +66,22 @@
     <div class="stat-cards-row">
       <div class="stat-card">
         <span class="stat-card-icon">👥</span>
-        <div class="stat-card-value">—</div>
+        <div class="stat-card-value"><?= $totalUsers ?></div>
         <div class="stat-card-label">Total Users</div>
       </div>
       <div class="stat-card">
         <span class="stat-card-icon">📝</span>
-        <div class="stat-card-value">—</div>
+        <div class="stat-card-value"><?= $totalContent ?></div>
         <div class="stat-card-label">Content Items</div>
       </div>
       <div class="stat-card">
         <span class="stat-card-icon">✉️</span>
-        <div class="stat-card-value">—</div>
+        <div class="stat-card-value"><?= $totalMessages ?></div>
         <div class="stat-card-label">Messages</div>
       </div>
       <div class="stat-card">
         <span class="stat-card-icon">🎯</span>
-        <div class="stat-card-value">—</div>
+        <div class="stat-card-value"><?= $totalGoals ?></div>
         <div class="stat-card-label">Active Goals</div>
       </div>
     </div>

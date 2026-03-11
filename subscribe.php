@@ -1,14 +1,22 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "getfit_db");
+require_once 'config.php';
 
-$email = $_POST['email'];
-$sql = "INSERT INTO newsletter (email) VALUES ('$email')";
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'])) {
+    $email = $_POST['email'];
 
-if ($conn->query($sql) === TRUE) {
-    echo "Subscribed successfully!";
-} else {
-    echo "Error: " . $conn->error;
+    try {
+        $result = $db->newsletter->insertOne([
+            'email' => $email,
+            'subscribed_at' => new MongoDB\BSON\UTCDateTime()
+        ]);
+
+        if ($result->getInsertedCount() === 1) {
+            echo "Subscribed successfully!";
+        } else {
+            echo "Error: Could not subscribe.";
+        }
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
+    }
 }
-
-$conn->close();
 ?>

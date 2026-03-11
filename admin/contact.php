@@ -5,22 +5,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $subject = isset($_POST['txtsubject']) ? htmlspecialchars($_POST['txtsubject']) : '';
     $message = isset($_POST['txtMessage']) ? htmlspecialchars($_POST['txtMessage']) : '';
 
-    $conn = new mysqli("localhost", "root", "", "getfit_db");
-    if ($conn->connect_error) { die("Connection failed: " . $conn->connect_error); }
+    require_once '../config.php';
 
-    $sql = "INSERT INTO contact_messages (name, email, subject, message) VALUES ('$name', '$email', '$subject', '$message')";
-    if ($conn->query($sql) === TRUE) {
-        $to      = $email;
-        $headers = "From: no-reply@getfit.com";
-        $body    = "Hello $name,\n\nThank you for contacting us. We received your message:\n\n$message\n\nWe'll get back to you soon.\n\n- GetFit Team";
-        @mail($to, $subject, $body, $headers);
+    try {
+        $result = $db->contact_messages->insertOne([
+            'name' => $name,
+            'email' => $email,
+            'subject' => $subject,
+            'message' => $message,
+            'created_at' => new MongoDB\BSON\UTCDateTime()
+        ]);
 
-        echo "<script>alert('Message sent successfully! We\\'ll get back to you soon.'); window.location.href = '../index.php';</script>";
-        exit();
-    } else {
-        echo "<script>alert('Error sending message. Please try again.');</script>";
+        if ($result->getInsertedCount() === 1) {
+            $to      = $email;
+            $headers = "From: no-reply@getfit.com";
+            $body    = "Hello $name,\n\nThank you for contacting us. We received your message:\n\n$message\n\nWe'll get back to you soon.\n\n- GetFit Team";
+            @mail($to, $subject, $body, $headers);
+
+            echo "<script>alert('Message sent successfully! We\\'ll get back to you soon.'); window.location.href = '../index.php';</script>";
+            exit();
+        } else {
+            echo "<script>alert('Error sending message. Please try again.');</script>";
+        }
+    } catch (Exception $e) {
+        echo "<script>alert('Error: " . addslashes($e->getMessage()) . "');</script>";
     }
-    $conn->close();
 }
 ?>
 <!DOCTYPE html>

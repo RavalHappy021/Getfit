@@ -1,38 +1,42 @@
 <?php
 session_start();
-$conn = new mysqli("localhost", "root", "", "getfit_db");
-
-if ($conn->connect_error) { die("Connection failed: " . $conn->connect_error); }
+require_once 'config.php';
 
 if (!isset($_SESSION['username'])) {
     header("Location: assets/signin.php");
     exit();
 }
 
-if (isset($_GET['goal_id'])) {
-    $goal_id = intval($_GET['goal_id']);
-    $goalQuery = $conn->prepare("SELECT * FROM goals WHERE id = ?");
-    $goalQuery->bind_param("i", $goal_id);
-    $goalQuery->execute();
-    $goalResult = $goalQuery->get_result();
-    $goal = $goalResult->fetch_assoc();
-}
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_goal'])) {
-    $goal_description = $_POST['goal_description'];
-    $target_weight    = $_POST['target_weight'];
-    $target_date      = $_POST['target_date'];
-    $goal_id          = intval($_POST['goal_id']);
-
-    $editGoal = $conn->prepare("UPDATE goals SET goal_description = ?, target_weight = ?, target_date = ? WHERE id = ?");
-    $editGoal->bind_param("sdsi", $goal_description, $target_weight, $target_date, $goal_id);
-
-    if ($editGoal->execute()) {
-        header("Location: user-dashboard.php");
-        exit();
-    } else {
-        echo "<script>alert('Failed to update goal. Please try again.');</script>";
+try {
+    if (isset($_GET['goal_id'])) {
+        $goal_id = $_GET['goal_id'];
+        $goal = $db->goals->findOne(['_id' => new MongoDB\BSON\ObjectId($goal_id)]);
     }
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_goal'])) {
+        $goal_description = $_POST['goal_description'];
+        $target_weight    = (float)$_POST['target_weight'];
+        $target_date      = $_POST['target_date'];
+        $goal_id          = $_POST['goal_id'];
+
+        $result = $db->goals->updateOne(
+            ['_id' => new MongoDB\BSON\ObjectId($goal_id)],
+            ['$set' => [
+                'goal_description' => $goal_description,
+                'target_weight'    => $target_weight,
+                'target_date'      => $target_date
+            ]]
+        );
+
+        if ($result->getModifiedCount() === 1 || $result->getMatchedCount() === 1) {
+            header("Location: user-dashboard.php");
+            exit();
+        } else {
+            echo "<script>alert('Failed to update goal or no changes made.');</script>";
+        }
+    }
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
 }
 ?>
 <!DOCTYPE html>
@@ -204,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_goal'])) {
       <p class="subtitle">Update your fitness goal details below</p>
 
       <form action="" method="POST">
-        <input type="hidden" name="goal_id" value="<?= htmlspecialchars($goal['id']) ?>">
+        <input type="hidden" name="goal_id" value="<?= htmlspecialchars((string)$goal['_id']) ?>">
 
         <div class="form-group">
           <label for="goal_description">Goal Description</label>

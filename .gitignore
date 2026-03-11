@@ -1,4 +1,6 @@
 # XAMPP / PHP
+.env
+/vendor/
 /admin/db_connect.php
 /admin/db.php
 /admin/user_db_connect.php

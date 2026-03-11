@@ -1,41 +1,32 @@
 <?php
 session_start();
-$conn = new mysqli("localhost", "root", "", "getfit_db");
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once 'config.php';
 
 $username = $_POST['username'];
 $password = $_POST['password'];
 
-$sql = "SELECT * FROM users WHERE username = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $username);
-$stmt->execute();
+try {
+    $user = $db->users->findOne(['username' => $username]);
 
-$result = $stmt->get_result();
+    if ($user) {
+        if (password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = (string)$user['_id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $user['role'];
 
-if ($result->num_rows === 1) {
-    $user = $result->fetch_assoc();
-
-    if (password_verify($password, $user['password'])) {
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['username'] = $user['username'];
-        $_SESSION['role'] = $user['role'];
-
-        if ($user['role'] === 'admin') {
-            header("Location: admin/admin-dashboard.php");
+            if ($user['role'] === 'admin') {
+                header("Location: admin/admin-dashboard.php");
+            } else {
+                header("Location: user-dashboard.php");
+            }
+            exit();
         } else {
-            header("Location: user-dashboard.php");
+            echo "Invalid password.";
         }
-        exit();
     } else {
-        echo "Invalid password.";
+        echo "No such user found.";
     }
-} else {
-    echo "No such user found.";
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
 }
-
-$conn->close();
 ?>

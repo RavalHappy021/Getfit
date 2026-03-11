@@ -1,99 +1,112 @@
 <?php
 session_start();
-$conn = new mysqli("localhost", "root", "", "getfit_db");
+require_once 'config.php';
 
 if (session_status() == PHP_SESSION_NONE) { session_start(); }
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
 if (!isset($_SESSION['username'])) {
     header("Location: assets/signin.php");
     exit();
 }
 
-$username = $_SESSION['username'];
-$userQuery = $conn->prepare("SELECT * FROM users WHERE username = ?");
-$userQuery->bind_param("s", $username);
-$userQuery->execute();
-$result = $userQuery->get_result();
-$user = $result->fetch_assoc();
-$userId = $user['id'];
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_goal'])) {
-    $goal_description = $_POST['goal_description'];
-    $target_weight = $_POST['target_weight'];
-    $target_date = $_POST['target_date'];
-    $status = "In Progress";
-    $insertGoal = $conn->prepare("INSERT INTO goals (user_id, goal_description, target_weight, target_date, status) VALUES (?, ?, ?, ?, ?)");
-    $insertGoal->bind_param("isdss", $userId, $goal_description, $target_weight, $target_date, $status);
-    if ($insertGoal->execute()) {
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    } else {
-        echo "<script>alert('Failed to add goal. Please try again.');</script>";
-    }
-}
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_progress'])) {
-    $progress_date = $_POST['progress_date'];
-    $weight = $_POST['weight'];
-    $waist = $_POST['waist'];
-    $chest = $_POST['chest'];
-    $insertProgress = $conn->prepare("INSERT INTO progress (user_id, date, weight, waist, chest) VALUES (?, ?, ?, ?, ?)");
-    $insertProgress->bind_param("isdss", $userId, $progress_date, $weight, $waist, $chest);
-    if ($insertProgress->execute()) {
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    } else {
-        echo "<script>alert('Failed to save progress.');</script>";
-    }
-}
-
-if (isset($_POST['edit_goal'])) {
-    $goal_id = $_POST['goal_id'];
-    $goal_description = $_POST['goal_description'];
-    $target_weight = $_POST['target_weight'];
-    $target_date = $_POST['target_date'];
-    $editGoal = $conn->prepare("UPDATE goals SET goal_description = ?, target_weight = ?, target_date = ? WHERE id = ?");
-    $editGoal->bind_param("sdsi", $goal_description, $target_weight, $target_date, $goal_id);
-    if ($editGoal->execute()) {
-        header("Location: " . $_SERVER['PHP_SELF']);
+try {
+    $username = $_SESSION['username'];
+    $user = $db->users->findOne(['username' => $username]);
+    
+    if (!$user) {
+        header("Location: assets/user-logout.php");
         exit();
     }
-}
+    
+    $userId = $user['_id']; // This is a MongoDB\BSON\ObjectId
 
-if (isset($_GET['delete_goal'])) {
-    $goal_id = $_GET['delete_goal'];
-    $deleteGoal = $conn->prepare("DELETE FROM goals WHERE id = ?");
-    $deleteGoal->bind_param("i", $goal_id);
-    if ($deleteGoal->execute()) {
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_goal'])) {
+        $goal_description = $_POST['goal_description'];
+        $target_weight = (float)$_POST['target_weight'];
+        $target_date = $_POST['target_date'];
+        $status = "In Progress";
+        
+        $result = $db->goals->insertOne([
+            'user_id' => $userId,
+            'goal_description' => $goal_description,
+            'target_weight' => $target_weight,
+            'target_date' => $target_date,
+            'status' => $status,
+            'created_at' => new MongoDB\BSON\UTCDateTime()
+        ]);
+        
+        if ($result->getInsertedCount() === 1) {
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
+        } else {
+            echo "<script>alert('Failed to add goal. Please try again.');</script>";
+        }
     }
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_progress'])) {
+        $progress_date = $_POST['progress_date'];
+        $weight = (float)$_POST['weight'];
+        $waist = (float)$_POST['waist'];
+        $chest = (float)$_POST['chest'];
+        
+        $result = $db->progress->insertOne([
+            'user_id' => $userId,
+            'date' => $progress_date,
+            'weight' => $weight,
+            'waist' => $waist,
+            'chest' => $chest,
+            'created_at' => new MongoDB\BSON\UTCDateTime()
+        ]);
+        
+        if ($result->getInsertedCount() === 1) {
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
+        } else {
+            echo "<script>alert('Failed to save progress.');</script>";
+        }
+    }
+
+    if (isset($_POST['edit_goal'])) {
+        $goal_id = $_POST['goal_id'];
+        $goal_description = $_POST['goal_description'];
+        $target_weight = (float)$_POST['target_weight'];
+        $target_date = $_POST['target_date'];
+        
+        $result = $db->goals->updateOne(
+            ['_id' => new MongoDB\BSON\ObjectId($goal_id), 'user_id' => $userId],
+            ['$set' => [
+                'goal_description' => $goal_description,
+                'target_weight' => $target_weight,
+                'target_date' => $target_date
+            ]]
+        );
+        
+        if ($result->getModifiedCount() === 1) {
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
+        }
+    }
+
+    if (isset($_GET['delete_goal'])) {
+        $goal_id = $_GET['delete_goal'];
+        $result = $db->goals->deleteOne(['_id' => new MongoDB\BSON\ObjectId($goal_id), 'user_id' => $userId]);
+        
+        if ($result->getDeletedCount() === 1) {
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
+        }
+    }
+
+    $today = date('l');
+    $workouts = $db->workout_plans->find(['user_id' => $userId, 'day' => $today]);
+    $diets = $db->diet_plans->find(['user_id' => $userId, 'day' => $today]);
+    $progress = $db->progress->find(['user_id' => $userId], ['sort' => ['date' => -1], 'limit' => 5]);
+    $goals = $db->goals->find(['user_id' => $userId]);
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
+    // In production, log this and show a nicer error
 }
-
-$today = date('l');
-$workoutQuery = $conn->prepare("SELECT * FROM workout_plans WHERE user_id = ? AND day = ?");
-$workoutQuery->bind_param("is", $userId, $today);
-$workoutQuery->execute();
-$workouts = $workoutQuery->get_result();
-
-$dietQuery = $conn->prepare("SELECT * FROM diet_plans WHERE user_id = ? AND day = ?");
-$dietQuery->bind_param("is", $userId, $today);
-$dietQuery->execute();
-$diets = $dietQuery->get_result();
-
-$progressQuery = $conn->prepare("SELECT * FROM progress WHERE user_id = ? ORDER BY date DESC LIMIT 5");
-$progressQuery->bind_param("i", $userId);
-$progressQuery->execute();
-$progress = $progressQuery->get_result();
-
-$goalQuery = $conn->prepare("SELECT * FROM goals WHERE user_id = ?");
-$goalQuery->bind_param("i", $userId);
-$goalQuery->execute();
-$goals = $goalQuery->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -733,7 +746,7 @@ $goals = $goalQuery->get_result();
       </div>
       <div class="stat-card">
         <div class="stat-icon">🎯</div>
-        <div class="stat-value"><?= $goals->num_rows ?></div>
+        <div class="stat-value"><?= iterator_count($db->goals->find(['user_id' => $userId])) ?></div>
         <div class="stat-label">Active Goals</div>
       </div>
     </div>
@@ -768,15 +781,17 @@ $goals = $goalQuery->get_result();
       <div class="dash-card-header">
         <h2 class="dash-card-title"><span class="icon">🏋️</span> Today's Workout</h2>
       </div>
-      <?php if ($workouts->num_rows > 0): ?>
-        <?php while ($w = $workouts->fetch_assoc()): ?>
+      <?php 
+      $workoutsArray = iterator_to_array($workouts);
+      if (count($workoutsArray) > 0): ?>
+        <?php foreach ($workoutsArray as $w): ?>
           <div class="workout-item">
             <span class="workout-name"><?= htmlspecialchars($w['workout']) ?></span>
             <span class="workout-status <?= $w['completed'] ? 'status-done' : 'status-pending' ?>">
               <?= $w['completed'] ? '✓ Done' : '⏳ Pending' ?>
             </span>
           </div>
-        <?php endwhile; ?>
+        <?php endforeach; ?>
       <?php else: ?>
         <div class="empty-state">
           <div class="icon">😴</div>
@@ -790,14 +805,16 @@ $goals = $goalQuery->get_result();
       <div class="dash-card-header">
         <h2 class="dash-card-title"><span class="icon">🥗</span> Diet Plan for Today</h2>
       </div>
-      <?php if ($diets->num_rows > 0): ?>
-        <?php while ($d = $diets->fetch_assoc()): ?>
+      <?php 
+      $dietsArray = iterator_to_array($diets);
+      if (count($dietsArray) > 0): ?>
+        <?php foreach ($dietsArray as $d): ?>
           <div class="diet-item">
             <span class="diet-meal-time"><?= htmlspecialchars($d['meal_time']) ?></span>
             <span class="diet-food"><?= htmlspecialchars($d['food_items']) ?></span>
             <span class="diet-calories"><?= htmlspecialchars($d['calories']) ?> kcal</span>
           </div>
-        <?php endwhile; ?>
+        <?php endforeach; ?>
       <?php else: ?>
         <div class="empty-state">
           <div class="icon">🍽️</div>
@@ -811,7 +828,9 @@ $goals = $goalQuery->get_result();
       <div class="dash-card-header">
         <h2 class="dash-card-title"><span class="icon">📊</span> Recent Progress</h2>
       </div>
-      <?php if ($progress->num_rows > 0): ?>
+      <?php 
+      $progressArray = iterator_to_array($progress);
+      if (count($progressArray) > 0): ?>
         <table class="progress-table">
           <thead>
             <tr>
@@ -822,14 +841,14 @@ $goals = $goalQuery->get_result();
             </tr>
           </thead>
           <tbody>
-            <?php while ($p = $progress->fetch_assoc()): ?>
+            <?php foreach ($progressArray as $p): ?>
               <tr>
                 <td><?= htmlspecialchars($p['date']) ?></td>
                 <td><?= htmlspecialchars($p['weight']) ?> kg</td>
                 <td><?= htmlspecialchars($p['waist']) ?> in</td>
                 <td><?= htmlspecialchars($p['chest']) ?> in</td>
               </tr>
-            <?php endwhile; ?>
+            <?php endforeach; ?>
           </tbody>
         </table>
       <?php else: ?>
@@ -872,16 +891,10 @@ $goals = $goalQuery->get_result();
         <h2 class="dash-card-title"><span class="icon">🎯</span> Fitness Goals</h2>
       </div>
 
-      <?php
-      // Reset goals pointer
-      $goalQuery2 = $conn->prepare("SELECT * FROM goals WHERE user_id = ?");
-      $goalQuery2->bind_param("i", $userId);
-      $goalQuery2->execute();
-      $goals2 = $goalQuery2->get_result();
-      ?>
-
-      <?php if ($goals2->num_rows > 0): ?>
-        <?php while ($g = $goals2->fetch_assoc()): ?>
+      <?php 
+      $goalsArray = iterator_to_array($goals);
+      if (count($goalsArray) > 0): ?>
+        <?php foreach ($goalsArray as $g): ?>
           <div class="goal-card">
             <div class="goal-info">
               <div class="goal-title"><?= htmlspecialchars($g['goal_description']) ?></div>
@@ -889,11 +902,11 @@ $goals = $goalQuery->get_result();
             </div>
             <span class="goal-status-badge"><?= htmlspecialchars($g['status']) ?></span>
             <div class="goal-actions">
-              <a href="edit-goal.php?goal_id=<?= $g['id'] ?>" class="btn-sm btn-edit" id="edit-goal-<?= $g['id'] ?>">✏️ Edit</a>
-              <a href="?delete_goal=<?= $g['id'] ?>" class="btn-sm btn-delete" onclick="return confirm('Delete this goal?')" id="delete-goal-<?= $g['id'] ?>">🗑️ Delete</a>
+              <a href="edit-goal.php?goal_id=<?= (string)$g['_id'] ?>" class="btn-sm btn-edit" id="edit-goal-<?= (string)$g['_id'] ?>">✏️ Edit</a>
+              <a href="?delete_goal=<?= (string)$g['_id'] ?>" class="btn-sm btn-delete" onclick="return confirm('Delete this goal?')" id="delete-goal-<?= (string)$g['_id'] ?>">🗑️ Delete</a>
             </div>
           </div>
-        <?php endwhile; ?>
+        <?php endforeach; ?>
       <?php else: ?>
         <div class="empty-state">
           <div class="icon">🎯</div>

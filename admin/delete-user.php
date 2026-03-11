@@ -1,26 +1,30 @@
 <?php
 include('db.php');
 
-if (isset($_GET['id'])) {
-    $user_id = $_GET['id'];
+try {
+    if (isset($_GET['id'])) {
+        $user_id = new MongoDB\BSON\ObjectId($_GET['id']);
 
-    // Step 1: Delete related rows from dependent tables
-    $tables_to_clean = ['progress', 'goals', 'diet_plans']; // Add more if needed
+        // Step 1: Delete related documents from dependent collections
+        $collections_to_clean = ['progress', 'goals', 'diet_plans', 'workout_plans'];
 
-    foreach ($tables_to_clean as $table) {
-        $sql = "DELETE FROM $table WHERE user_id = $user_id";
-        mysqli_query($conn, $sql);
-    }
+        foreach ($collections_to_clean as $collection) {
+            $db->$collection->deleteMany(['user_id' => $user_id]);
+        }
 
-    // Step 2: Now delete the user
-    $delete_user = "DELETE FROM users WHERE id = $user_id";
-    if (mysqli_query($conn, $delete_user)) {
-        header("Location: manage-users.php");
-        exit();
+        // Step 2: Now delete the user
+        $result = $db->users->deleteOne(['_id' => $user_id]);
+
+        if ($result->getDeletedCount() === 1) {
+            header("Location: manage-users.php");
+            exit();
+        } else {
+            echo "Error: Could not delete user.";
+        }
     } else {
-        echo "Error deleting user: " . mysqli_error($conn);
+        echo "No user ID provided.";
     }
-} else {
-    echo "No user ID provided.";
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
 }
 ?>

@@ -1,15 +1,22 @@
 <?php
-include('db.php');
+require_once '../config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $content = mysqli_real_escape_string($conn, $_POST['content']);
+    $content = $_POST['content'];
 
-    $sql = "INSERT INTO content (content) VALUES ('$content')";
+    try {
+        $result = $db->content->insertOne([
+            'content' => $content,
+            'created_at' => new MongoDB\BSON\UTCDateTime()
+        ]);
 
-    if (mysqli_query($conn, $sql)) {
-        echo "Content saved successfully.";
-    } else {
-        echo "Error: " . mysqli_error($conn);
+        if ($result->getInsertedCount() === 1) {
+            echo "Content saved successfully.";
+        } else {
+            echo "Error: Could not save content.";
+        }
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
     }
 }
 ?>

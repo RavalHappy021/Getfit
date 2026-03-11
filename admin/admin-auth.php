@@ -1,22 +1,28 @@
 <?php
 session_start();
-include('db.php'); // Your database connection file
+include('db.php'); // Now includes main config.php
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-    // Check in admins table
-    $query = "SELECT * FROM admins WHERE username = '$username' AND password = '$password'";
-    $result = mysqli_query($conn, $query);
+    try {
+        // Check in admins table (collection)
+        $admin = $db->admins->findOne([
+            'username' => $username,
+            'password' => $password // Note: In a real app, this should be hashed.
+        ]);
 
-    if ($result && mysqli_num_rows($result) === 1) {
-        $_SESSION['admin_logged_in'] = true;
-        $_SESSION['admin_username'] = $username;
-        header("Location: admin-dashboard.php");
-        exit();
-    } else {
-        echo "<script>alert('Invalid Credentials!'); window.location.href='admin-login.php';</script>";
+        if ($admin) {
+            $_SESSION['admin_logged_in'] = true;
+            $_SESSION['admin_username'] = $username;
+            header("Location: admin-dashboard.php");
+            exit();
+        } else {
+            echo "<script>alert('Invalid Credentials!'); window.location.href='admin-login.php';</script>";
+        }
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
     }
 }
 ?>

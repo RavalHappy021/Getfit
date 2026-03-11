@@ -1,30 +1,39 @@
 <?php
 session_start();
-include 'db.php';
+require_once 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $date = $_POST['date'] ?? date('Y-m-d');
+    $weight = (float)($_POST['weight'] ?? 0);
+    $waist = (float)($_POST['waist'] ?? 0);
+    $chest = (float)($_POST['chest'] ?? 0);
 
-    $sql = "SELECT id, password FROM users WHERE email = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    try {
+        $user = $db->users->findOne(['email' => $email]);
 
-    if ($result->num_rows === 1) {
-        $row = $result->fetch_assoc();
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = (string)$user['_id'];
+            $_SESSION['username'] = $user['username'];
 
-        // Password verify (if hashed)
-        if (password_verify($password, $row['password'])) {
-            $_SESSION['user_id'] = $row['id']; // 🔴 Yeh line honi chahiye
+            // Log the progress
+            $db->progress->insertOne([
+                'user_id' => $user['_id'],
+                'date' => $date,
+                'weight' => $weight,
+                'waist' => $waist,
+                'chest' => $chest,
+                'created_at' => new MongoDB\BSON\UTCDateTime()
+            ]);
+
             header("Location: user-dashboard.php");
             exit();
         } else {
-            echo "Incorrect password.";
+            echo "Invalid credentials.";
         }
-    } else {
-        echo "User not found.";
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
     }
 }
 ?>

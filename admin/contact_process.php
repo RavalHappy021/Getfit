@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "getfit_db");
+require_once '../config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST['name']);
@@ -9,14 +9,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Validate fields
     if (!empty($name) && !empty($email) && !empty($subject) && !empty($message)) {
-        $stmt = $conn->prepare("INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $name, $email, $subject, $message);
-        $stmt->execute();
-        $stmt->close();
-        echo "Message sent successfully!";
+        try {
+            $result = $db->contact_messages->insertOne([
+                'name' => $name,
+                'email' => $email,
+                'subject' => $subject,
+                'message' => $message,
+                'created_at' => new MongoDB\BSON\UTCDateTime()
+            ]);
+
+            if ($result->getInsertedCount() === 1) {
+                echo "Message sent successfully!";
+            } else {
+                echo "Error: Could not send message.";
+            }
+        } catch (Exception $e) {
+            echo "Error: " . $e->getMessage();
+        }
     } else {
         echo "Please fill in all fields!";
     }
 }
-$conn->close();
 ?>
