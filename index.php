@@ -484,9 +484,9 @@ $loggedIn = isset($_SESSION['username']);
             </div>
 
             <input type="text" id="userInput" placeholder="Ask about workouts, diet, fitness tips..." />
-            <button onclick="sendMessage()" id="chatbot-send-btn">
-              <ion-icon name="send-outline" aria-hidden="true" style="display:inline; margin-right:8px;"></ion-icon>
-              Send Message
+            <button onclick="sendMessage()" class="btn btn-primary" id="chatbot-send-btn" style="width: 100%; justify-content: center;">
+              <ion-icon name="send-outline" aria-hidden="true"></ion-icon>
+              <span>Send Message</span>
             </button>
           </div>
         </div>

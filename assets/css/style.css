@@ -767,24 +767,7 @@ body {
 
 #userInput::placeholder { color: var(--text-4); }
 
-/* Chatbot send button - override global */
-#chatbot-container > button {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  border-radius: var(--radius-md);
-  font-size: var(--fs-base);
-  font-weight: var(--fw-600);
-  font-family: var(--ff-outfit);
-  box-shadow: var(--shadow-primary);
-  transition: all var(--transition-base);
-}
-
-#chatbot-container > button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-primary-lg);
-}
+/* Chatbot button now uses standard .btn classes */
 
 /* ============================================
    SERVICE SECTION (if present in other pages)
