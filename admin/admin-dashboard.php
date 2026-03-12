@@ -1,5 +1,5 @@
 <?php
-require_once '../config.php';
+include 'db.php';
 
 // Fetch stats
 $totalUsers = iterator_count($db->users->find());

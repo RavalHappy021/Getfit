@@ -1,5 +1,5 @@
 <?php
-require_once '../config.php';
+include 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST['name']);

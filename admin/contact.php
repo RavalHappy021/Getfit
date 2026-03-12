@@ -5,7 +5,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $subject = isset($_POST['txtsubject']) ? htmlspecialchars($_POST['txtsubject']) : '';
     $message = isset($_POST['txtMessage']) ? htmlspecialchars($_POST['txtMessage']) : '';
 
-    require_once '../config.php';
+    include 'db.php';
 
     try {
         $result = $db->contact_messages->insertOne([
